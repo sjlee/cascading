@@ -26,6 +26,15 @@ ext.hadoopVersion = '2.0.2-alpha'
 if( System.properties[ 'hadoop.release.final' ] )
   hadoopVersion = System.properties[ 'hadoop.release.final' ]
 
+configurations.all {
+  resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+    if (details.requested.group == 'commons-daemon' && details.requested.name == 'commons-daemon' && details.requested.version == '1.0.3') {
+      // 1.0.3 has wrong group id
+      details.useVersion '1.0.9'
+    }
+  }
+}
+
 dependencies {
 
   compile project( ':cascading-core' )
@@ -44,9 +53,7 @@ dependencies {
 
   testCompile project( path: ':cascading-platform', configuration: 'testArtifacts' )
 
-  testCompile( group: 'org.apache.hadoop', name: 'hadoop-minicluster', version: hadoopVersion ) {
-    exclude group: 'commons-daemon' // temporarily removed commons-daemon from deps because it is busted
-  }
+  testCompile group: 'org.apache.hadoop', name: 'hadoop-minicluster', version: hadoopVersion
 
   testRuntime group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.6.1'
   testRuntime group: 'log4j', name: 'log4j', version: '1.2.16'
