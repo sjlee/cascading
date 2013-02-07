@@ -41,12 +41,12 @@ dependencies {
 
   providedCompile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
 
-  compile( group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-core', version: hadoopVersion ) {
+  providedCompile( group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-core', version: hadoopVersion ) {
     exclude group: 'ant'
     exclude group: 'junit'
   }
 
-  compile( group: 'org.apache.hadoop', name: 'hadoop-common', version: hadoopVersion ) {
+  providedCompile( group: 'org.apache.hadoop', name: 'hadoop-common', version: hadoopVersion ) {
     exclude group: 'ant'
     exclude group: 'junit'
   }
