@@ -1,5 +1,11 @@
 Cascading Change Log
 
+2.1.5.t1
+
+  [pull request 17] Fixed an issue where MultiInputFormat.getSplits() goes into a stack overflow due to missing input formats.
+
+  Enabled builds based on hadoop 2.0.
+
 2.1.5
 
   Updated c.t.h.u.BytesComparator to implement c.t.Hasher as a convenience.
