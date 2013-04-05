@@ -5,7 +5,7 @@ Cascading Change Log
   Added c.t.h.CombinedHfs to allow for smaller files reachable by c.t.h.Hfs taps to be aggregated into fewer
   splits, thus fewer map tasks. @sjlee
 
-  [pull request 17] Fixed an issue where MultiInputFormat.getSplits() goes into a stack overflow due to missing input formats.
+  Fixed issue where a j.l.StackOverflowError would be thrown if the Hadoop mapred.input.format.class property was not set.
 
   Enabled builds based on hadoop 2.0.
 
