@@ -37,7 +37,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.RecordReader;
-import org.apache.hadoop.mapred.TextInputFormat;
 import org.junit.Test;
 
 import cascading.PlatformTestCase;
@@ -471,7 +470,7 @@ public class HadoopTapPlatformTest extends PlatformTestCase implements Serializa
     getPlatform().copyFromLocal( inputFileUpper );
 
     // create a CombinedHfs instance on the directory location
-    CombinedHfs source = new CombinedHfs( new Hfs( new TextLine( new Fields( "offset", "line" )), dataLocation ), TextInputFormat.class );
+    CombinedHfs source = new CombinedHfs( new Hfs( new TextLine( new Fields( "offset", "line" )), dataLocation ) );
 
     validateLength( source.openForRead( getPlatform().getFlowProcess() ), 10 );
     }

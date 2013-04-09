@@ -22,7 +22,6 @@ package cascading.tap.hadoop;
 
 import java.io.IOException;
 
-import org.apache.hadoop.mapred.InputFormat;
 import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RecordReader;
@@ -33,6 +32,7 @@ import org.apache.hadoop.mapred.lib.CombineFileSplit;
 
 import cascading.flow.FlowProcess;
 import cascading.tap.SourceTap;
+import cascading.tap.TapException;
 import cascading.tap.hadoop.io.CombineFileRecordReaderWrapper;
 import cascading.tap.hadoop.io.HadoopTupleEntrySchemeIterator;
 import cascading.tap.type.FileType;
@@ -45,26 +45,24 @@ import cascading.tuple.TupleEntryIterator;
  * instances.
  * <p/>
  * A CombinedHfs is a wrapper around {@link Hfs}. Create an {@link Hfs} instance, and wrap the {@link Hfs}
- * instance with the appropriate input format class that should be used to handle individual files.
+ * instance with the CombinedHfs constructor. The input format set by the Hfs scheme is used to handle individual
+ * files.
  *
  * @see org.apache.hadoop.mapred.lib.CombineFileInputFormat
  */
 public class CombinedHfs extends SourceTap<JobConf,RecordReader> implements FileType<JobConf>
   {
   private final Hfs hfs;
-  private final Class<? extends InputFormat> individualInputFormatCls;
 
   /**
    * Constructor that wraps an {@link Hfs} instance to create a CombinedHfs instance.
    *
    * @param hfs the {@link Hfs} instance to be wrapped
-   * @param individualInputFormatCls the input format class for handling individual input files
    */
-  public CombinedHfs( Hfs hfs, Class<? extends InputFormat> individualInputFormatCls )
+  public CombinedHfs( Hfs hfs )
     {
     super( hfs.getScheme() );
     this.hfs = hfs;
-    this.individualInputFormatCls = individualInputFormatCls;
     }
 
   public String getIdentifier()
@@ -93,8 +91,13 @@ public class CombinedHfs extends SourceTap<JobConf,RecordReader> implements File
     {
     // let the hfs does its thing first
     hfs.sourceConfInit( flowProcess, conf );
-    // set the individual input format onto the job conf so that it can be used by CombinedInputFormat
-    conf.set( CombineFileRecordReaderWrapper.INDIVIDUAL_INPUT_FORMAT, individualInputFormatCls.getName() );
+    // get the prescribed input format from the underlying hfs so it can be used by CombinedInputFormat
+    String individualInputFormatCls = conf.get( "mapred.input.format.class" );
+    if( individualInputFormatCls == null )
+      {
+      throw new TapException("input format is missing from the underlying Hfs"); 
+      }
+    conf.set( CombineFileRecordReaderWrapper.INDIVIDUAL_INPUT_FORMAT, individualInputFormatCls );
 
     // override the input format class
     conf.setInputFormat( CombinedInputFormat.class );
