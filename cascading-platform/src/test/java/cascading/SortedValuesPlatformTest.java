@@ -112,8 +112,8 @@ public class SortedValuesPlatformTest extends PlatformTestCase
 
     if( getPlatform().isMapReduce() && ( properties.get( "mapreduce.job.maps" ) != null || properties.get( "mapred.map.tasks" ) != null ) )
       {
-        properties.put( "mapred.map.tasks", 13 );
-        properties.put( "mapreduce.job.maps", 13 );
+      properties.put( "mapred.map.tasks", 13 );
+      properties.put( "mapreduce.job.maps", 13 );
       }
 
     Map sources = new HashMap();
