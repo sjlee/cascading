@@ -1,12 +1,5 @@
 Cascading Change Log
 
-2.1.6.t1
-
-  Added c.t.h.CombinedHfs to allow for smaller files reachable by c.t.h.Hfs taps to be aggregated into fewer
-  splits, thus fewer map tasks. @sjlee
-
-  Enabled builds based on hadoop 2.0.
-
 2.1.6
 
   Updated c.p.SubAssembly to throw UnsupportedOperationException on #getConfigDef() and #getStepConfigDef() calls.
