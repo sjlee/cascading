@@ -1,5 +1,9 @@
 Cascading Change Log (Twitter)
 
+2.1.6.t2 (unreleased)
+
+  HADOOPDEV-124 Updated c.t.h.Hfs to allow for smaller files to be combined into fewer splits, thus fewer map tasks. (sjlee)
+
 2.1.6.t1
 
   HADOOPDEV-115 turned excessive info logging to debug. (sjlee)

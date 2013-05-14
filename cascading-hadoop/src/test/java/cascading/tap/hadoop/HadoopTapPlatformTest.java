@@ -513,6 +513,37 @@ public class HadoopTapPlatformTest extends PlatformTestCase implements Serializa
     }
 
   @Test
+  public void testCombinedHfs() throws Exception
+    {
+    getPlatform().copyFromLocal( inputFileLower );
+    getPlatform().copyFromLocal( inputFileUpper );
+
+    Hfs sourceLower = new Hfs( new TextLine( new Fields( "offset", "line" ) ), InputData.inputFileLower );
+    Hfs sourceUpper = new Hfs( new TextLine( new Fields( "offset", "line" ) ), InputData.inputFileUpper );
+
+    // create a CombinedHfs instance on these files
+    Tap source = new MultiSourceTap<Hfs, JobConf, RecordReader>( sourceLower, sourceUpper );
+
+    FlowProcess<JobConf> process = getPlatform().getFlowProcess();
+    JobConf conf = process.getConfigCopy();
+
+    // set the combine flag
+    conf.setBoolean( HfsProps.COMBINE_INPUT_FILES, true );
+
+    // test the input format and the split
+    source.sourceConfInit( process, conf );
+
+    InputFormat inputFormat = conf.getInputFormat();
+
+    assertEquals( Hfs.CombinedInputFormat.class, inputFormat.getClass() );
+    InputSplit[] splits = inputFormat.getSplits( conf, 1 );
+
+    assertEquals( 1, splits.length );
+
+    validateLength( source.openForRead( process ), 10 );
+    }
+
+  @Test
   public void testMissingInputFormat() throws Exception
     {
     getPlatform().copyFromLocal( inputFileApache );
@@ -547,33 +578,5 @@ public class HadoopTapPlatformTest extends PlatformTestCase implements Serializa
       {
       // ignore
       }
-    }
-
-  @Test
-  public void testCombinedHfs() throws Exception
-    {
-    getPlatform().copyFromLocal( inputFileLower );
-    getPlatform().copyFromLocal( inputFileUpper );
-
-    Hfs sourceLower = new Hfs( new TextLine( new Fields( "offset", "line" ) ), InputData.inputFileLower );
-    Hfs sourceUpper = new Hfs( new TextLine( new Fields( "offset", "line" ) ), InputData.inputFileUpper );
-
-    // create a CombinedHfs instance on these files
-    CombinedHfs source = new CombinedHfs( sourceLower, sourceUpper );
-
-    FlowProcess<JobConf> process = getPlatform().getFlowProcess();
-    JobConf conf = process.getConfigCopy();
-
-    // test the input format and the split
-    source.sourceConfInit( process, conf );
-
-    InputFormat inputFormat = conf.getInputFormat();
-
-    assertEquals( CombinedHfs.CombinedInputFormat.class, inputFormat.getClass() );
-    InputSplit[] splits = inputFormat.getSplits( conf, 1 );
-
-    assertEquals( 1, splits.length );
-
-    validateLength( source.openForRead( process ), 10 );
     }
   }
